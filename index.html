@@ -1,0 +1,319 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Портфолио — Кирилл Серяк</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@200;400;700;900&family=Mulish:ital,wght@0,300;0,400;1,300&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <div id="cur"></div>
+  <div id="cur-ring"></div>
+
+  <!-- ══════════════ NAV ══════════════ -->
+  <nav id="main-nav">
+    <a class="nav-logo" data-nav="home" href="#">Кирилл Серяк</a>
+    <div class="nav-pills" id="nav-pills">
+      <button class="nav-btn active" data-nav="home">Главная</button>
+      <button class="nav-btn" data-nav="works">Работы</button>
+      <button class="nav-btn" data-nav="contact">Контакты</button>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════
+     СТРАНИЦА — ГЛАВНАЯ
+══════════════════════════════════════ -->
+  <div id="page-home" class="page active">
+
+    <section class="hero">
+      <div class="hero-media">
+        <video src="media/feat-1.mp4" autoplay muted loop playsinline></video>
+      </div>
+      <!-- Шоурил / постер ─────────────────────────────
+      Раскомментируйте нужный вариант:
+      <div class="hero-media">
+        <video src="media/feat-1.mp4" autoplay muted loop playsinline></video>
+      </div>
+      или:
+      <div class="hero-media">
+        <img src="media/hero-bg.jpg" alt=""/>
+      </div>
+    ──────────────────────────────────────────────── -->
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero-noise"></div>
+
+      <div class="hero-content">
+        <!-- Замените на вашу специализацию -->
+        <p class="hero-eyebrow">Аниматор · Режиссер · Супервайзер телевизионной графики</p>
+
+        <!-- Замените на ваше имя — тег <span> окрашивает часть в красный -->
+        <h1 class="hero-name"><span>К</span>ИРИЛЛ <span>С</span>ЕРЯК</h1>
+
+        <!-- Главный аргумент для работодателя — 1–2 предложения -->
+        <p class="hero-pitch">
+          Я создаю визуальные истории, в которых пересекаются <br>
+          2D/3D-анимация, композитинг и игровое кино — от одного <br>
+          раскадрованного кадра до финальной версии для трансляции.
+        </p>
+
+        <div class="hero-cta">
+          <button class="btn-primary" data-nav="works">Работы</button>
+          <button class="btn-ghost" data-nav="contact">Контакты</button>
+        </div>
+      </div>
+
+      <div class="hero-scroll-hint">
+        <div class="scroll-line"></div>
+        <p>Scroll</p>
+      </div>
+    </section>
+
+    <!-- WHY ME ─ 4 карточки преимуществ -->
+    <section class="why r">
+      <p class="sec-label">Почему я</p>
+      <div>
+        <h2 class="why-headline">ЧТО Я ПРИВНОШУ</h2>
+        <div class="why-cards">
+
+          <div class="why-card">
+            <p class="why-num">01</p>
+            <p class="why-card-title">Полная ответственность за весь процесс</p>
+            <p class="why-card-text">
+              Концепт, раскадровка, анимация, композитинг — каждый этап в одних руках.
+              Никаких разрывов при передаче, никакой потери замысла.
+            </p>
+          </div>
+
+          <div class="why-card">
+            <p class="why-num">02</p>
+            <p class="why-card-title">Интеграция с живым видео</p>
+            <p class="why-card-text">
+              2D- и 3D-персонажи, вписанные в реальные кадры так, что они кажутся
+              частью сцены, а не просто наложенными сверху.
+            </p>
+          </div>
+
+          <div class="why-card">
+            <p class="why-num">03</p>
+            <p class="why-card-title">Скорость вещания</p>
+            <p class="why-card-text">
+              Жесткие дедлайны, прямые эфиры, никаких вторых дублей.
+              Motion-графика и AI-инструменты, которые выдерживают эфир.
+            </p>
+          </div>
+
+          <div class="why-card">
+            <p class="why-num">04</p>
+            <p class="why-card-title">Режиссура и супервайзинг</p>
+            <p class="why-card-text">
+              Сбор команды, покадровый контроль качества, ответственность
+              от препродакшена до постпродакшена. Полный цикл.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED STRIP ─ горизонтальная лента избранных работ -->
+    <section class="featured-strip r">
+      <p class="strip-label">Опыт работы</p>
+      <!-- Карточки рендерятся из data/works.js → window.PORTFOLIO.featured -->
+      <div class="strip-track" id="strip-track"></div>
+    </section>
+
+  </div><!-- /page-home -->
+
+
+  <!-- ══════════════════════════════════════
+     СТРАНИЦА — РАБОТЫ
+══════════════════════════════════════ -->
+  <div id="page-works" class="page">
+
+    <div class="works-top">
+      <h1 class="works-big-title">ПОРТФОЛИО</h1>
+      <div class="works-filters" id="works-filters">
+        <button class="f-btn on" data-filter="all">Все</button>
+        <button class="f-btn" data-filter="animator">Аниматор</button>
+        <button class="f-btn" data-filter="director">Режиссер</button>
+        <button class="f-btn" data-filter="TV">Супервайзер телевизионной графики</button>
+      </div>
+    </div>
+
+    <div class="works-body">
+
+      <!-- ЛЕНТА ЛЕТ -->
+      <aside class="timeline">
+        <div class="tl-inner" id="tl-inner"></div>
+      </aside>
+
+      <!-- КАРТОЧКИ РАБОТ -->
+      <!-- Карточки рендерятся из data/works.js → window.PORTFOLIO.works -->
+      <div class="works-cards" id="works-cards"></div>
+    </div>
+  </div><!-- /page-works -->
+
+
+  <!-- ══════════════════════════════════════
+     СТРАНИЦА — КОНТАКТЫ
+══════════════════════════════════════ -->
+  <div id="page-contact" class="page">
+    <div class="contact-wrap">
+
+      <!-- ФОТО -->
+      <div class="contact-photo-col">
+        <!-- Замените src на своё фото: <img src="media/photo.jpg" alt="Имя Фамилия"/> -->
+        <img src="media/Фото Кирилла.jpg" alt="KIRILL SERYAK" />
+        <p class="photo-cap">Кирилл Серяк — Аниматор / Режиссер / Супервайзер телевизионной графики</p>
+      </div>
+
+      <!-- ТЕКСТ + ДОСТИЖЕНИЯ + КОНТАКТЫ -->
+      <div class="contact-text-col">
+        <div>
+          <!-- Имя -->
+          <h1 class="contact-name">КИРИЛЛ<br />СЕРЯК</h1>
+          <!-- Должность -->
+          <p class="contact-title">Аниматор · Режиссер · Супервайзер телевизионной графики</p>
+
+          <!-- Биография — замените параграфы -->
+          <div class="contact-bio">
+            <p>
+              Я создаю визуальные истории, где каждая деталь работает на эмоцию. 
+              Моя практика охватывает 2D и 3D анимацию, композитинг и интеграцию 
+              с живым видео — от первого концептуального наброска до кадра, 
+              готового к эфиру.
+            </p>
+            <br />
+            <p>
+              То, что движет мной — момент, когда нарисованный персонаж оказывается в 
+              реальное пространстве и чувствуется неотъемлемой его частью, когда зритель 
+              перестаёт замечать шов. Мне важны атмосфера, игра персонажа и то, как 
+              зритель переживает каждую сцену.
+            </p>
+            <br />
+            <p>
+              Руковожу ли я командой на съёмках рекламы или анимирую сцену в одиночку 
+              глубоко за полночь — моя планка не меняется. Детали — это разница между 
+              работой, которую просто сделали, и работой, которую запомнят.
+            </p>
+          </div>
+
+          <!-- Достижения — замените на свои -->
+          <p class="ach-label">Достижения и опыт</p>
+          <ul class="ach-list">
+            <li class="ach-item">
+              <span class="ach-year">
+                2026
+              </span>
+              <p class="ach-text">
+                Мой папа - мэр
+                <span>
+                  — Арт-директор, анимированные вставки (интеграция с живым видео)
+                </span>
+              </p>
+            </li>
+            <li class="ach-item">
+              <span class="ach-year">
+                2026
+              </span>
+              <p class="ach-text">
+                78 телеканал
+                <span>
+                  — Супервайзер эфирной графики
+                </span>
+              </p>
+            </li>
+            <li class="ach-item">
+              <span class="ach-year">
+                2025
+              </span>
+              <p class="ach-text">
+                Fresh Heads Production
+                <span>
+                  — Арт-директор, Cinema 4D · Blender · Nuke · After Effects
+                </span>
+              </p>
+            </li>
+            <li class="ach-item">
+              <span class="ach-year">
+                2025
+              </span>
+              <p class="ach-text">
+                Анимационная студия «Мельница»
+                <span>
+                  — Аниматор, «Иван Царевич и Серый Волк 6»
+                </span>
+              </p>
+            </li>
+            <li class="ach-item">
+              <span class="ach-year">
+                2024
+              </span>
+              <p class="ach-text">
+                Tornado Energy
+                <span>
+                  — Режиссёр и супервайзер анимации
+                </span>
+              </p>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Способы связи -->
+        <div>
+          <p class="clinks-label">Связаться</p>
+          <div class="clinks">
+
+            <a class="clink" href="mailto:kirill.erys@gmail.com">
+              <span class="clink-icon">✉</span>
+              <span class="clink-text">kirill.erys@gmail.com</span>
+              <span class="clink-sub">Email</span>
+            </a>
+
+            <a class="clink" href="https://t.me/kirillsyml" target="_blank" rel="noopener">
+              <span class="clink-icon">✈</span>
+              <span class="clink-text">@kirillsyml</span>
+              <span class="clink-sub">Telegram</span>
+            </a>
+
+            <a class="clink" href="media/Резюме.pdf" download>
+              <span class="clink-icon">↓</span>
+              <span class="clink-text">Резюме (PDF)</span>
+              <span class="clink-sub">Скачать</span>
+            </a>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /page-contact -->
+
+
+  <!-- ══════════════ МОДАЛЬНОЕ ОКНО ВИДЕО ══════════════ -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <button class="modal-close" data-close aria-label="Закрыть">×</button>
+      <div class="modal-video" id="modal-video"></div>
+      <div class="modal-info">
+        <p class="modal-cat" id="modal-cat"></p>
+        <h2 class="modal-title" id="modal-title"></h2>
+        <div class="modal-desc" id="modal-desc"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data/works.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
