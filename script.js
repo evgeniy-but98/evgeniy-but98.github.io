@@ -1,4 +1,4 @@
-/* ══════════════════════════════════════════════════════════════
+﻿/* ══════════════════════════════════════════════════════════════
    Логика портфолио. Данные работ — в data/works.js
    (window.PORTFOLIO.featured, window.PORTFOLIO.works)
    ────────────────────────────────────────────────────────────── */
@@ -143,6 +143,7 @@ function buildMedia(poster, preview, alt) {
   if (poster) {
     const img = el('img', 'media-poster');
     img.src = poster; img.alt = alt || '';
+    img.loading = 'lazy';
     frag.appendChild(img);
   }
   if (preview) {
@@ -152,6 +153,10 @@ function buildMedia(poster, preview, alt) {
     v.preload = 'none';
     frag.appendChild(v);
   }
+  // Значок «играть» — подсказка, что превью кликабельно (на тач всегда виден)
+  //const badge = el('span', 'play-badge', '▶');
+  //badge.setAttribute('aria-hidden', 'true');
+  //frag.appendChild(badge);
   return frag;
 }
 
@@ -176,35 +181,41 @@ function renderWorks() {
   const cont = document.getElementById('works-cards');
   if (!cont || !window.PORTFOLIO) return;
   cont.innerHTML = '';
-  window.PORTFOLIO.works.forEach(w => {
+  // Автосортировка по годам: от новых к старым. Сортировка стабильная,
+  // поэтому внутри одного года сохраняется исходный порядок из data/works.js.
+  // Это чинит «прыгающую» ленту лет: порядок карточек в DOM теперь
+  // совпадает с порядком лет в таймлайне.
+  const sorted = [...window.PORTFOLIO.works].sort((a, b) => b.year - a.year);
+  sorted.forEach(w => {
     const a = el('article', 'work-card');
     a.dataset.category = w.category;
     a.dataset.year = w.year;
     a.dataset.id = w.id;
+    a.tabIndex = 0;
+    a.setAttribute('role', 'button');
+    a.setAttribute('aria-label', w.title + ' — открыть');
 
+    // Большая «киношная» плитка: медиа на весь кадр, текст оверлеем снизу.
     const thumb = el('div', 'work-thumb');
     thumb.appendChild(buildMedia(w.poster, w.preview, w.title));
 
     const info = el('div', 'work-info');
-    const top = el('div');
     const head = el('div', 'work-head');
     head.appendChild(el('span', 'work-role', w.role));
     head.appendChild(el('span', 'work-yr', String(w.year)));
-    top.appendChild(head);
-    top.appendChild(el('h2', 'work-name', w.title));
-    top.appendChild(el('p', 'work-desc', w.desc));
-    info.appendChild(top);
-
-    const foot = el('div', 'work-footer');
-    foot.appendChild(el('span', 'work-studio', w.studio));
+    info.appendChild(head);
+    info.appendChild(el('h2', 'work-name', w.title));
+    info.appendChild(el('p', 'work-desc', w.desc));
     const tags = el('div', 'work-tags');
-    (w.tags || []).forEach(t => tags.appendChild(el('span', 'wtag', t)));
-    foot.appendChild(tags);
-    info.appendChild(foot);
+    (w.tags || []).slice(0, 3).forEach(t => tags.appendChild(el('span', 'wtag', t)));
+    info.appendChild(tags);
 
     a.appendChild(thumb);
     a.appendChild(info);
     a.addEventListener('click', e => { if (!e.target.closest('a')) openWork(w); });
+    a.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(w); }
+    });
     cont.appendChild(a);
   });
 }
@@ -295,17 +306,85 @@ if (modal) {
    ВИДЕО-ПРЕВЬЮ ПРИ НАВЕДЕНИИ — навешиваем после рендера
    ────────────────────────────────────────────────────────────── */
 
-function wireHoverPreviews() {
-  document.querySelectorAll('.strip-item, .work-thumb').forEach(elm => {
+// Видео в работах/ленте играют САМИ, когда попадают в зону видимости
+// (как на студийных сайтах-референсах), плюс мгновенный рестарт при наведении.
+function initMediaPlayback() {
+  const items = document.querySelectorAll('.strip-item, .work-thumb');
+  if (!items.length) return;
+
+  const io = ('IntersectionObserver' in window) ? new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target.querySelector('.media-preview');
+    if (!v) return;
+    if (e.isIntersecting) {
+      e.target.classList.add('playing');
+      const p = v.play(); if (p) p.catch(() => { });
+    } else {
+      e.target.classList.remove('playing');
+      v.pause();
+    }
+  }), { threshold: 0.5 }) : null;
+
+  items.forEach(elm => {
+    if (elm._mpWired) return;
+    elm._mpWired = true;
     const v = elm.querySelector('.media-preview');
-    if (!v || elm._hpWired) return;
-    elm._hpWired = true;
+    if (!v) return;
+    if (io) io.observe(elm);
     elm.addEventListener('mouseenter', () => {
-      v.currentTime = 0;
+      try { v.currentTime = 0; } catch (_) { }
       const p = v.play(); if (p) p.catch(() => { });
     });
-    elm.addEventListener('mouseleave', () => v.pause());
   });
+}
+
+// Фоновое видео на главной через Kinescope Player API.
+// Обычные параметры в ссылке (?autoplay=1...) у Kinescope автоплей НЕ запускают —
+// нужен именно Player API с behavior.autoPlay. ID видео берётся из data-kinescope-id.
+function initHeroPlayer() {
+  const box = document.getElementById('hero-player');
+  if (!box) return;
+  const id = box.dataset.kinescopeId;
+  if (!id) return;
+
+  function start() {
+    if (!(window.Kinescope && window.Kinescope.IframePlayer)) return false;
+    window.Kinescope.IframePlayer.create('hero-player', {
+      url: 'https://kinescope.io/' + id,
+      size: { width: '100%', height: '100%' },
+      behavior: { autoPlay: true, muted: true, loop: true },
+      ui: { controls: false }
+    }).catch(() => { });
+    return true;
+  }
+
+  // Скрипт плеера может ещё не загрузиться к моменту вызова — ждём его.
+  if (!start()) {
+    let tries = 0;
+    const iv = setInterval(() => {
+      if (start() || ++tries > 50) clearInterval(iv);
+    }, 150);
+  }
+}
+
+// Параллакс + лёгкий зум фонового видео при прокрутке (отключается reduced-motion)
+function initParallax() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const els = [...document.querySelectorAll('[data-parallax]')];
+  if (!els.length) return;
+  let ticking = false;
+  function update() {
+    const y = window.scrollY;
+    els.forEach(elm => {
+      const f = parseFloat(elm.dataset.parallax) || 0.15;
+      const scale = 1 + Math.min(y, 700) / 700 * 0.1;
+      elm.style.transform = 'translate3d(0,' + (y * f).toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
+    });
+    ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  update();
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -316,9 +395,21 @@ function initStripAutoScroll() {
   const t = document.getElementById('strip-track'); if (!t) return;
   const sec = t.closest('section'); if (!sec) return;
 
+  // Ширина «страницы» прокрутки = ширина одной карточки + gap
+  function pageStep() {
+    const item = t.querySelector('.strip-item');
+    if (!item) return t.clientWidth * .8;
+    const gap = parseFloat(getComputedStyle(t).columnGap || getComputedStyle(t).gap || '14') || 14;
+    return item.getBoundingClientRect().width + gap;
+  }
+
+  /* ── Hover-зоны: плавная авто-прокрутка ТОЛЬКО для мыши.
+     На тач-устройствах они скрыты через CSS (@media hover:none),
+     поэтому больше не «перехватывают» тап по центральным карточкам
+     и не уезжают до самого конца. ── */
   let raf = null;
   function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
-  function scroll(dir) {
+  function autoScroll(dir) {
     stop();
     (function step() { t.scrollLeft += dir * 10; raf = requestAnimationFrame(step); })();
   }
@@ -329,21 +420,79 @@ function initStripAutoScroll() {
     z.className = 'strip-zone strip-zone-' + (side > 0 ? 'r' : 'l');
     z.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="' +
       (side > 0 ? 'M9 18l6-6-6-6' : 'M15 18l-6-6 6-6') + '"/></svg>';
-    z.addEventListener('mouseenter', () => scroll(side));
+    z.addEventListener('mouseenter', () => autoScroll(side));
     z.addEventListener('mouseleave', stop);
+    // Клик по зоне — дискретный сдвиг на одну карточку (на случай, если
+    // мышь не «дожимает» край).
+    z.addEventListener('click', () => { stop(); t.scrollBy({ left: side * pageStep(), behavior: 'smooth' }); });
     sec.appendChild(z);
     zones.push(z);
   }
   makeZone(-1);
   makeZone(1);
 
-  // Если работ мало — растягиваем их на всю ширину и прячем стрелки
+  /* ── Тач-пейджер: явные кнопки ‹ › + точки под лентой.
+     Видны только на тач-устройствах (CSS). Дают понятную, предсказуемую
+     постраничную прокрутку вместо неудобного «листания» пальцем. ── */
+  const pager = document.createElement('div');
+  pager.className = 'strip-pager';
+  const prev = document.createElement('button');
+  prev.type = 'button';
+  prev.setAttribute('aria-label', 'Предыдущий ролик');
+  prev.innerHTML = '<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>';
+  const next = document.createElement('button');
+  next.type = 'button';
+  next.setAttribute('aria-label', 'Следующий ролик');
+  next.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+  const dots = document.createElement('div');
+  dots.className = 'strip-dots';
+
+  function buildDots() {
+    dots.innerHTML = '';
+    const items = t.querySelectorAll('.strip-item');
+    items.forEach(() => dots.appendChild(document.createElement('i')));
+    syncDots();
+  }
+  function syncDots() {
+    const items = [...t.querySelectorAll('.strip-item')];
+    if (!items.length) return;
+    const center = t.scrollLeft + t.clientWidth / 2;
+    let idx = 0, best = Infinity;
+    items.forEach((it, i) => {
+      const c = it.offsetLeft + it.offsetWidth / 2;
+      const d = Math.abs(c - center);
+      if (d < best) { best = d; idx = i; }
+    });
+    [...dots.children].forEach((d, i) => d.classList.toggle('on', i === idx));
+  }
+  prev.addEventListener('click', () => t.scrollBy({ left: -pageStep(), behavior: 'smooth' }));
+  next.addEventListener('click', () => t.scrollBy({ left: pageStep(), behavior: 'smooth' }));
+  pager.appendChild(prev);
+  pager.appendChild(dots);
+  pager.appendChild(next);
+  sec.appendChild(pager);
+  buildDots();
+
+  let st = null;
+  t.addEventListener('scroll', () => {
+    if (st) cancelAnimationFrame(st);
+    st = requestAnimationFrame(syncDots);
+  }, { passive: true });
+
+  // Если роликов мало и они помещаются — растягиваем на всю ширину,
+  // прячем зоны и пейджер. На тач-устройствах режим «fit» не применяем:
+  // там ленту листают пальцем/пейджером, и сжимать карточки незачем.
   function evalFit() {
     stop();
-    t.classList.remove('fit');
+    const isTouch = window.matchMedia('(hover:none)').matches;
+    t.classList.remove('fit'); // снять до замера, иначе scrollWidth == clientWidth (латч)
     const overflow = t.scrollWidth > t.clientWidth + 4;
-    t.classList.toggle('fit', !overflow);
+    t.classList.toggle('fit', !overflow && !isTouch);
     zones.forEach(z => z.classList.toggle('off', !overflow));
+    // На тач показываем пейджер, когда есть что листать; CSS сам решает видимость
+    // через @media(hover:none), поэтому снимаем inline-стиль, а не ставим flex.
+    pager.style.display = (isTouch && overflow) ? '' : 'none';
+    buildDots();
   }
   evalFit();
   window.addEventListener('load', evalFit);
@@ -366,10 +515,22 @@ function initWorksFilter() {
 
 /* ══ SCROLL REVEAL ══ */
 function initScrollReveal() {
+  const els = [...document.querySelectorAll('.r')];
+  const reveal = el => el.classList.add('vis');
+  const inView = el => { const r = el.getBoundingClientRect(); return r.top < innerHeight * 0.95 && r.bottom > 0; };
+
   const ro = new IntersectionObserver(
-    es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); ro.unobserve(e.target); } }),
-    { threshold: .1 });
-  document.querySelectorAll('.r').forEach(elm => ro.observe(elm));
+    es => es.forEach(e => { if (e.isIntersecting) { reveal(e.target); ro.unobserve(e.target); } }),
+    { threshold: .12 });
+  els.forEach(el => ro.observe(el));
+
+  // Подстраховка: если IntersectionObserver придушен (например, вкладка была
+  // в фоне при загрузке) — показываем всё, что в зоне видимости, при загрузке
+  // и при возврате на вкладку. Контент никогда не «застревает» скрытым.
+  const sweep = () => els.forEach(el => { if (!el.classList.contains('vis') && inView(el)) reveal(el); });
+  setTimeout(sweep, 1600);
+  window.addEventListener('load', sweep);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) sweep(); });
 }
 
 /* ══ TIMELINE ══ */
@@ -381,6 +542,7 @@ function buildTimeline() {
   if (!years.length) { tl.innerHTML = ''; return; }
   tl.innerHTML = years.map(y => `<div class="tl-year" data-y="${y}">${y}</div>`).join('');
 
+  let lastCur = null;
   function hl() {
     const vis = cards.filter(c => !c.classList.contains('hidden'));
     let cur = years[0];
@@ -391,6 +553,16 @@ function buildTimeline() {
       vis.forEach(c => { if (c.getBoundingClientRect().top < window.innerHeight * .6) cur = +c.dataset.year; });
     }
     tl.querySelectorAll('.tl-year').forEach(elm => elm.classList.toggle('hl', +elm.dataset.y === cur));
+
+    // На мобильном таймлайн горизонтальный — подкручиваем активный год к центру.
+    if (cur !== lastCur) {
+      lastCur = cur;
+      const active = tl.querySelector('.tl-year.hl');
+      if (active && window.matchMedia('(max-width:860px)').matches) {
+        const target = active.offsetLeft - tl.clientWidth / 2 + active.offsetWidth / 2;
+        tl.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+      }
+    }
   }
   window.removeEventListener('scroll', window._tlhl);
   window._tlhl = hl;
@@ -403,8 +575,10 @@ function buildTimeline() {
    ────────────────────────────────────────────────────────────── */
 renderFeatured();
 renderWorks();
-wireHoverPreviews();
+initHeroPlayer();
+initMediaPlayback();
 initStripAutoScroll();
 initScrollReveal();
 initWorksFilter();
+initParallax();
 buildTimeline();

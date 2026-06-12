@@ -6,8 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Портфолио — Кирилл Серяк</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@200;400;700;900&family=Mulish:ital,wght@0,300;0,400;1,300&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -34,20 +35,21 @@
   <div id="page-home" class="page active">
 
     <section class="hero">
-      <div class="hero-media">
-        <video src="media/feat-1.mp4" autoplay muted loop playsinline></video>
+
+      <!-- ╔══════════════════════════════════════════════════════════════╗
+           ║  ВИДЕО НА ФОНЕ ГЛАВНОЙ (Kinescope) — ЗАМЕНИТЬ ПЕРЕД ПУБЛИКАЦИЕЙ║
+           ║  Чтобы поставить другое видео: поменяйте ТОЛЬКО ID в           ║
+           ║  data-kinescope-id ниже (часть из ссылки kinescope.io/<ID>).  ║
+           ║  Сейчас ID = 14RhAzr8FAhE92YW36D9VD                           ║
+           ║                                                              ║
+           ║  Автоплей включается через JS Player API Kinescope (см.       ║
+           ║  initHeroPlayer в script.js). Обычные параметры в ссылке у     ║
+           ║  Kinescope автоплей НЕ запускают — поэтому и была кнопка play. ║
+           ╚══════════════════════════════════════════════════════════════╝ -->
+      <div class="hero-media" data-parallax="0.16">
+        <div id="hero-player" class="hero-embed" data-kinescope-id="aRUnMjTngcLqrxP5sttbAb"></div>
       </div>
-      <!-- Шоурил / постер ─────────────────────────────
-      Раскомментируйте нужный вариант:
-      <div class="hero-media">
-        <video src="media/feat-1.mp4" autoplay muted loop playsinline></video>
-      </div>
-      или:
-      <div class="hero-media">
-        <img src="media/hero-bg.jpg" alt=""/>
-      </div>
-    ──────────────────────────────────────────────── -->
-      <canvas id="hero-canvas"></canvas>
+      <div class="hero-scrim"></div>
       <div class="hero-noise"></div>
 
       <div class="hero-content">
@@ -59,9 +61,9 @@
 
         <!-- Главный аргумент для работодателя — 1–2 предложения -->
         <p class="hero-pitch">
-          Я создаю визуальные истории, в которых пересекаются <br>
-          2D/3D-анимация, композитинг и игровое кино — от одного <br>
-          раскадрованного кадра до финальной версии для трансляции.
+          Анимирую персонажей, режиссирую ролики и делаю графику для прямого эфира.
+          Берусь за проект с первого наброска и довожу до готового кадра — в кино,
+          рекламе и на телевидении.
         </p>
 
         <div class="hero-cta">
@@ -76,50 +78,60 @@
       </div>
     </section>
 
+    <!-- KINETIC MARQUEE ─ бегущая строка (декор, движение как у студийных сайтов) -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Анимация <i>✦</i> Режиссура <i>✦</i> ТВ-графика <i>✦</i> Композитинг <i>✦</i> Live-action <i>✦</i> 2D / 3D
+          <i>✦</i> </span>
+        <span>Анимация <i>✦</i> Режиссура <i>✦</i> ТВ-графика <i>✦</i> Композитинг <i>✦</i> Live-action <i>✦</i> 2D / 3D
+          <i>✦</i> </span>
+      </div>
+    </div>
+
     <!-- WHY ME ─ 4 карточки преимуществ -->
     <section class="why r">
-      <p class="sec-label">Почему я</p>
-      <div>
-        <h2 class="why-headline">ЧТО Я ПРИВНОШУ</h2>
-        <div class="why-cards">
+      <div class="why-left">
+        <p class="sec-label">Почему я</p>
+        <h2 class="why-headline">ЧТО Я<br />УМЕЮ</h2>
+      </div>
+      <div class="why-cards">
 
-          <div class="why-card">
-            <p class="why-num">01</p>
-            <p class="why-card-title">Полная ответственность за весь процесс</p>
-            <p class="why-card-text">
-              Концепт, раскадровка, анимация, композитинг — каждый этап в одних руках.
-              Никаких разрывов при передаче, никакой потери замысла.
-            </p>
-          </div>
-
-          <div class="why-card">
-            <p class="why-num">02</p>
-            <p class="why-card-title">Интеграция с живым видео</p>
-            <p class="why-card-text">
-              2D- и 3D-персонажи, вписанные в реальные кадры так, что они кажутся
-              частью сцены, а не просто наложенными сверху.
-            </p>
-          </div>
-
-          <div class="why-card">
-            <p class="why-num">03</p>
-            <p class="why-card-title">Скорость вещания</p>
-            <p class="why-card-text">
-              Жесткие дедлайны, прямые эфиры, никаких вторых дублей.
-              Motion-графика и AI-инструменты, которые выдерживают эфир.
-            </p>
-          </div>
-
-          <div class="why-card">
-            <p class="why-num">04</p>
-            <p class="why-card-title">Режиссура и супервайзинг</p>
-            <p class="why-card-text">
-              Сбор команды, покадровый контроль качества, ответственность
-              от препродакшена до постпродакшена. Полный цикл.
-            </p>
-          </div>
-
+        <div class="why-card">
+          <p class="why-num">01</p>
+          <p class="why-card-title">Веду проект от начала до конца</p>
+          <p class="why-card-text">
+            Раскадровка, анимация, композитинг — обычно делаю сам. Так замысел
+            не рассыпается, пока работу передают между исполнителями.
+          </p>
         </div>
+
+        <div class="why-card">
+          <p class="why-num">02</p>
+          <p class="why-card-title">Вписываю анимацию в живое видео</p>
+          <p class="why-card-text">
+            2D- и 3D-персонажи, которые выглядят частью реального кадра,
+            а не наклейкой поверх него.
+          </p>
+        </div>
+
+        <div class="why-card">
+          <p class="why-num">03</p>
+          <p class="why-card-title">Успеваю к эфиру</p>
+          <p class="why-card-text">
+            Прямые эфиры и сжатые сроки, без права на второй дубль. Знаю,
+            как быстро собрать графику и где помогут AI-инструменты.
+          </p>
+        </div>
+
+        <div class="why-card">
+          <p class="why-num">04</p>
+          <p class="why-card-title">Могу собрать и вести команду</p>
+          <p class="why-card-text">
+            Подбираю людей, проверяю качество по кадрам и отвечаю за результат —
+            от препродакшена до сдачи.
+          </p>
+        </div>
+
       </div>
     </section>
 
@@ -128,6 +140,17 @@
       <p class="strip-label">Опыт работы</p>
       <!-- Карточки рендерятся из data/works.js → window.PORTFOLIO.featured -->
       <div class="strip-track" id="strip-track"></div>
+    </section>
+
+    <!-- ЗАКРЫВАЮЩИЙ БЛОК / ПРИЗЫВ -->
+    <section class="home-cta r">
+      <p class="cta-eyebrow">Контакты</p>
+      <h2 class="cta-title">Поговорим?</h2>
+      <p class="cta-sub">Напишите — обсудим ваш проект и как я могу помочь.</p>
+      <div class="cta-actions">
+        <button class="btn-primary" data-nav="contact">Связаться</button>
+        <button class="btn-ghost btn-ghost--invert" data-nav="works">Смотреть работы</button>
+      </div>
     </section>
 
   </div><!-- /page-home -->
@@ -186,37 +209,34 @@
           <!-- Биография — замените параграфы -->
           <div class="contact-bio">
             <p>
-              Я создаю визуальные истории, где каждая деталь работает на эмоцию. 
-              Моя практика охватывает 2D и 3D анимацию, композитинг и интеграцию 
-              с живым видео — от первого концептуального наброска до кадра, 
-              готового к эфиру.
+              Делаю анимацию для кино, рекламы и телевидения: 2D и 3D, композитинг,
+              интеграцию с живой съёмкой. Берусь за проект с первого наброска и
+              довожу до кадра, готового к эфиру.
             </p>
             <br />
             <p>
-              То, что движет мной — момент, когда нарисованный персонаж оказывается в 
-              реальное пространстве и чувствуется неотъемлемой его частью, когда зритель 
-              перестаёт замечать шов. Мне важны атмосфера, игра персонажа и то, как 
-              зритель переживает каждую сцену.
+              Больше всего люблю момент, когда нарисованный персонаж попадает в
+              реальный кадр и зритель перестаёт замечать, где заканчивается съёмка и
+              начинается рисунок. Ради этого и вожусь с атмосферой, актингом и мелочами.
             </p>
             <br />
             <p>
-              Руковожу ли я командой на съёмках рекламы или анимирую сцену в одиночку 
-              глубоко за полночь — моя планка не меняется. Детали — это разница между 
-              работой, которую просто сделали, и работой, которую запомнят.
+              Веду я команду на съёмках или анимирую сцену один — отношусь к работе
+              одинаково. Обычно всё решают детали.
             </p>
           </div>
 
           <!-- Достижения — замените на свои -->
-          <p class="ach-label">Достижения и опыт</p>
+          <p class="ach-label">Опыт</p>
           <ul class="ach-list">
             <li class="ach-item">
               <span class="ach-year">
                 2026
               </span>
               <p class="ach-text">
-                Мой папа - мэр
+                Мой папа — мэр
                 <span>
-                  — Арт-директор, анимированные вставки (интеграция с живым видео)
+                  — Арт-директор, анимированные вставки и интеграция с живой съёмкой
                 </span>
               </p>
             </li>
@@ -312,6 +332,8 @@
     </div>
   </div>
 
+  <!-- Kinescope Player API — нужен для автоплея фонового видео на главной -->
+  <script src="https://player.kinescope.io/latest/iframe.player.js"></script>
   <script src="data/works.js"></script>
   <script src="script.js"></script>
 </body>
